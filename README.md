@@ -2,49 +2,21 @@
 
 Conventional Commits for decisions.
 
+---
+
 ## The Problem
 
-Context window exhaustion is invisible failure.
+AI assistants forget. Every session starts fresh. Decisions made yesterday are lost today.
 
-When you're building software with AI help, you make dozens of decisions: architecture choices, trade-offs, assumptions about requirements. These decisions live only in chat history—scattered, unsearchable, and eventually lost when the context window fills up.
+You make dozens of choices during development—architecture, trade-offs, assumptions. These live only in chat history, invisible when context fills up. Six months later: *Why did we choose this approach? What were we assuming?*
 
-Current state:
-- AI forgets decisions
-- AI forgets rationale
-- AI contradicts earlier work
-- Human re-explains everything
+**arx** is a spec for tracking decisions across sessions. Like Conventional Commits standardized commit messages, arx standardizes decision records.
 
-Six months later, you can't answer: *Why did we choose REST over GraphQL? What assumptions were we making about load? Who decided to defer the caching layer?*
+---
 
-## Why Not...
+## Quick Look
 
-| Tool | What It Does | Gap |
-|------|--------------|-----|
-| **mem0** | Stores facts for retrieval | "Remember my preferences" ≠ "Track why we made this decision and whether it's still valid" |
-| **RAG** | Retrieves documents to augment responses | Decisions aren't documents to retrieve—they're living records that get superseded, reversed, or deferred |
-| **Chat history** | Captures everything | But surfaces nothing—you can't query it, filter it, or see which decisions are still active |
-| **ADRs** | Architecture Decision Records | Heavy process, markdown templates, designed for major decisions—not the stream of micro-decisions in an AI session |
-
-arx fills the gap: a structured journal that tracks the **lifecycle** of decisions. When they were made, by whom (human or AI), and whether they're still active, have been superseded, or were reversed.
-
-## Design Principles
-
-| Principle | Implementation |
-|-----------|----------------|
-| **Zero dependencies** | Flatfiles in git. No database, no service, no account. |
-| **Git-native** | `.arx/` directory commits with your code. Decision history is part of your project's story. |
-| **Model agnostic** | Works with Claude, GPT, Gemini, local models, or no AI at all |
-| **Framework agnostic** | Works with any agentic framework or none |
-| **Immutable journal** | Entries are never modified. Superseding or reversing creates a new entry with a backward link. |
-| **Derived state** | Active/superseded/reversed computed at query time, not stored |
-
-## The Spec
-
-The spec is the core value. Everything else is tooling.
-
-### Journal Entry Format
-
-Each entry is a markdown file with YAML frontmatter:
+A decision is a markdown file:
 
 ```markdown
 ---
@@ -53,29 +25,12 @@ type: decision
 actor: human
 date: 2026-01-19T14:30:00Z
 title: Use PostgreSQL for primary storage
-scope: backend
 ---
 
-PostgreSQL chosen for its maturity, JSONB support, and team familiarity.
-Considered MongoDB but rejected due to transaction requirements.
+Chosen for maturity and team familiarity.
 ```
 
-### Entry Types
-
-| Type | Use When |
-|------|----------|
-| `clarification` | Recording an answer to a question |
-| `decision` | Making a choice between alternatives |
-| `override` | Deliberately going against a previous decision |
-| `blocker` | Something is preventing progress |
-| `assumption` | Proceeding based on something unverified |
-| `risk` | Identifying a potential problem |
-| `defer` | Postponing something for later |
-| `tombstone` | Marking something as deprecated or removed |
-
-### Relationship Links
-
-Inspired by the saga pattern's compensating actions:
+When requirements change, add a new entry that points back:
 
 ```markdown
 ---
@@ -83,132 +38,141 @@ id: decision-2026-01-19-d4e5f6
 type: decision
 actor: human
 date: 2026-01-19T16:45:00Z
-title: Switch to CockroachDB for multi-region support
-scope: backend
+title: Switch to CockroachDB for multi-region
 supersedes: decision-2026-01-19-a1b2c3
 ---
 
-Requirements changed: we now need multi-region deployment.
-CockroachDB provides PostgreSQL compatibility with distributed SQL.
+Requirements changed. Need multi-region support.
 ```
 
-| Link | When to Use | Effect |
-|------|-------------|--------|
-| `supersedes` | Requirements changed, better approach found | Original becomes `superseded` (inactive but valid history) |
-| `reverses` | Approach failed, mistake discovered, rollback needed | Original becomes `reversed` (inactive, marked unsuccessful) |
-| `relates_to` | Context without replacement | No state change |
+The original stays untouched. State (`active`, `superseded`, `reversed`) is computed by following links.
 
-**Critical: Only backward links.** New entries point to old entries, never the reverse. This preserves immutability—no back-patching required.
+---
 
-### Derived State
+## Why arx?
 
-State is computed at query time by following the link graph:
+| Approach | Limitation |
+|----------|------------|
+| **mem0** | Stores facts, not decision lifecycle |
+| **RAG** | Retrieves documents, doesn't track what's still valid |
+| **Chat history** | Captures everything, surfaces nothing |
+| **ADRs** | Heavy process for major decisions only |
 
-| State | Rule |
-|-------|------|
-| `active` | No other entry supersedes or reverses this one |
-| `superseded` | Another entry has `supersedes: <this-id>` |
-| `reversed` | Another entry has `reverses: <this-id>` |
+arx fills the gap: lightweight, git-native, tracks what's current vs. what's history.
 
-### Checkpoint Format
+---
 
-For session continuity—where you are in a task:
+## Principles
+
+- **Flatfiles in git** — No database, no service
+- **Immutable entries** — Never edit, only supersede or reverse
+- **Computed state** — Active/superseded/reversed derived at query time
+- **Backward links only** — New points to old, preserving immutability
+- **Model agnostic** — Works with any AI or none
+
+---
+
+## The Spec
+
+### Directory Structure
+
+```
+.arx/
+├── journal/              # Decision entries (append-only)
+│   └── *.md
+├── checkpoint.json       # Session state (overwrite)
+└── resume-prompt.md      # Generated context
+```
+
+### Entry Format
+
+```yaml
+---
+id: {type}-{YYYY-MM-DD}-{6-char-hex}
+type: decision | assumption | clarification | blocker | risk | override | defer | tombstone
+actor: human | system
+date: {ISO 8601}
+title: {short description}
+scope: {optional, freeform}
+supersedes: {optional, id of entry this replaces}
+reverses: {optional, id of entry this undoes}
+---
+
+{optional body with context}
+```
+
+### Entry Types
+
+| Type | When to Use |
+|------|-------------|
+| `decision` | Choosing between alternatives |
+| `assumption` | Proceeding on something unverified |
+| `clarification` | Recording an answer |
+| `blocker` | Something preventing progress |
+| `risk` | A potential problem |
+| `override` | Going against a previous decision |
+| `defer` | Postponing for later |
+| `tombstone` | Marking as removed/deprecated |
+
+### Relationships
+
+| Link | Meaning | State Effect |
+|------|---------|--------------|
+| `supersedes` | Replaces (requirements changed) | Original → `superseded` |
+| `reverses` | Undoes (approach failed) | Original → `reversed` |
+
+Entries without incoming links are `active`.
+
+### Checkpoint
+
+Session position for resuming work:
 
 ```json
 {
   "version": "1",
-  "task_id": "implement-auth-system",
+  "task_id": "implement-auth",
+  "status": "in_progress",
   "started_at": "2026-01-19T10:00:00Z",
-  "last_activity": "2026-01-19T14:30:00Z",
-  "status": "in_progress"
+  "last_activity": "2026-01-19T14:30:00Z"
 }
 ```
 
-Stale checkpoints (>72 hours) are flagged automatically.
+---
 
-## Directory Structure
+## Getting Started
 
-```
-.arx/
-├── checkpoint.json           # Current session state (overwrite)
-├── journal/                  # Entry files (append-only)
-│   ├── decision-2026-01-19-a1b2c3.md
-│   ├── decision-2026-01-19-d4e5f6.md
-│   └── assumption-2026-01-19-g7h8i9.md
-└── resume-prompt.md          # Generated context for new sessions
-```
+You can use arx with just files—create `.arx/journal/` and start writing markdown.
 
-The `.arx/` directory belongs in your project root. Commit it to git.
-
-## Adoption
-
-| Level | Setup | What You Get |
-|-------|-------|--------------|
-| 1. Spec only | Create `.arx/journal/` | Manual file creation, git tracks history |
-| 2. CLI | `go install github.com/demwunz/arx@latest` | Validation, proper formatting, queries |
-| 3. MCP | `go install github.com/demwunz/arx/cmd/mcp@latest` | AI assistants read/write directly |
-
-Start simple. Add rigor as needed.
-
-## CLI Usage
+Or use the tooling:
 
 ```bash
-# Record a decision
-arx add decision "Use PostgreSQL for primary storage"
+# Install CLI
+go install github.com/demwunz/arx@latest
 
-# Track an assumption with scope
-arx add assumption "API will receive <1000 requests/second" --scope backend
+# Add a decision
+arx add decision "Use PostgreSQL for storage"
 
-# Supersede when requirements change
-arx add decision "Switch to CockroachDB for multi-region" --supersedes decision-2026-01-19-a1b2c3
-
-# See what's currently active
+# See active decisions
 arx list --state active
 
-# Show full entry details
-arx show decision-2026-01-19-a1b2c3
-
-# Generate resume context for a new session
+# Resume context for new session
 arx resume --print
 ```
 
-## MCP Integration
+See [docs/cli.md](docs/cli.md) for full CLI reference.
 
-Add to Claude Code's MCP configuration:
+---
 
-```json
-{
-  "mcpServers": {
-    "arx": {
-      "command": "arx-mcp"
-    }
-  }
-}
-```
+## Integrations
 
-Tools: `arx_add`, `arx_list`, `arx_show`, `arx_checkpoint_show`, `arx_checkpoint_clear`, `arx_resume`
+| Tool | Purpose | Docs |
+|------|---------|------|
+| **CLI** | Human interaction | [docs/cli.md](docs/cli.md) |
+| **MCP Server** | AI assistant integration | [docs/mcp.md](docs/mcp.md) |
 
-## Comparison
+Both are thin wrappers around the spec. The files are the source of truth.
 
-| Factor | arx |
-|--------|-----|
-| Solves real pain | ✓ Context loss is universal |
-| Zero dependencies | ✓ Markdown files in git |
-| Works with existing tools | ✓ MCP, CLI, any editor |
-| Easy to understand | ✓ "Conventional Commits for decisions" |
-| Easy to adopt incrementally | ✓ Add one file, you're using it |
-| Model agnostic | ✓ Works with any AI or none |
-| Framework agnostic | ✓ Works with any agentic framework |
-
-## The Key Insight
-
-**It turns "start over" into "continue from."**
-
-With arx:
-- Position is checkpointed
-- Decisions are journaled
-- Resume reconstructs context
-- Continuity survives session boundaries
+---
 
 ## License
 
