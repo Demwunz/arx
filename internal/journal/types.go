@@ -45,6 +45,7 @@ type Entry struct {
 	Actor       ActorType `yaml:"actor"`
 	Date        time.Time `yaml:"date"`
 	Title       string    `yaml:"title"`
+	Scope       string    `yaml:"scope,omitempty"`
 	Content     string    `yaml:"-"`
 	Supersedes  string    `yaml:"supersedes,omitempty"`
 	ReversedBy  string    `yaml:"reversed_by,omitempty"`

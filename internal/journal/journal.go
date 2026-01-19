@@ -16,6 +16,34 @@ const (
 	JournalDir = ".arx/journal"
 )
 
+// ValidEntryTypes is the list of valid entry types
+var ValidEntryTypes = []EntryType{
+	EntryTypeClarification,
+	EntryTypeDecision,
+	EntryTypeOverride,
+	EntryTypeBlocker,
+	EntryTypeAssumption,
+	EntryTypeRisk,
+	EntryTypeDefer,
+	EntryTypeTombstone,
+}
+
+// IsValidEntryType checks if the given type string is a valid entry type
+func IsValidEntryType(t string) bool {
+	for _, valid := range ValidEntryTypes {
+		if string(valid) == t {
+			return true
+		}
+	}
+	return false
+}
+
+// ReadByID loads a single entry by its ID
+func ReadByID(id string) (*Entry, error) {
+	filePath := filepath.Join(JournalDir, id+".md")
+	return readEntry(filePath)
+}
+
 // Write saves an entry with YAML frontmatter to the journal directory
 func Write(entry *Entry) error {
 	if err := os.MkdirAll(JournalDir, 0755); err != nil {
@@ -116,6 +144,16 @@ func readEntry(filePath string) (*Entry, error) {
 	entry.Content = strings.TrimSpace(content)
 
 	return entry, nil
+}
+
+// UpdateReversedBy updates an entry's ReversedBy field and saves it
+func UpdateReversedBy(targetID, reversingID string) error {
+	entry, err := ReadByID(targetID)
+	if err != nil {
+		return fmt.Errorf("failed to read target entry: %w", err)
+	}
+	entry.ReversedBy = reversingID
+	return Write(entry)
 }
 
 // GetState computes the derived state of all entries
