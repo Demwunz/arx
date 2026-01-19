@@ -14,15 +14,23 @@ You make dozens of choices during development—architecture, trade-offs, assump
 
 ---
 
-## Use with Claude Code
+## Use with AI Assistants
 
-**1. Install the MCP server:**
+arx provides an MCP server that works with any MCP-compatible client—Claude Code, Cursor, Gemini, or others.
+
+**1. Install:**
 
 ```bash
 go install github.com/demwunz/arx/cmd/mcp@latest
 ```
 
-**2. Add to Claude Code settings** (`.claude/settings.local.json`):
+**2. Configure your client:**
+
+| Client | Config Location |
+|--------|-----------------|
+| Claude Code | `.claude/settings.local.json` |
+| Cursor | MCP settings |
+| Others | See client docs |
 
 ```json
 {
@@ -34,19 +42,19 @@ go install github.com/demwunz/arx/cmd/mcp@latest
 }
 ```
 
-**3. Use naturally in conversation:**
+**3. Use naturally:**
 
 > "Record that we decided to use PostgreSQL for the database"
 
 > "What decisions have we made so far?"
 
-> "We need to change the database choice—supersede the PostgreSQL decision with MongoDB"
+> "Supersede the PostgreSQL decision—we're switching to MongoDB"
 
 > "What assumptions are we making?"
 
-> "Generate resume context so I can continue this tomorrow"
+> "Generate resume context so I can continue tomorrow"
 
-Claude handles the file format. You just talk.
+The AI handles the file format. You just talk.
 
 ---
 
