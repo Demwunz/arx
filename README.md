@@ -14,6 +14,42 @@ You make dozens of choices during development—architecture, trade-offs, assump
 
 ---
 
+## Use with Claude Code
+
+**1. Install the MCP server:**
+
+```bash
+go install github.com/demwunz/arx/cmd/mcp@latest
+```
+
+**2. Add to Claude Code settings** (`.claude/settings.local.json`):
+
+```json
+{
+  "mcpServers": {
+    "arx": {
+      "command": "arx-mcp"
+    }
+  }
+}
+```
+
+**3. Use naturally in conversation:**
+
+> "Record that we decided to use PostgreSQL for the database"
+
+> "What decisions have we made so far?"
+
+> "We need to change the database choice—supersede the PostgreSQL decision with MongoDB"
+
+> "What assumptions are we making?"
+
+> "Generate resume context so I can continue this tomorrow"
+
+Claude handles the file format. You just talk.
+
+---
+
 ## Quick Look
 
 A decision is a markdown file:
@@ -139,38 +175,25 @@ Session position for resuming work:
 
 ---
 
-## Getting Started
+## Use from Terminal
 
-You can use arx with just files—create `.arx/journal/` and start writing markdown.
-
-Or use the tooling:
+For humans who prefer the command line:
 
 ```bash
-# Install CLI
 go install github.com/demwunz/arx@latest
 
-# Add a decision
 arx add decision "Use PostgreSQL for storage"
-
-# See active decisions
 arx list --state active
-
-# Resume context for new session
 arx resume --print
 ```
 
-See [docs/cli.md](docs/cli.md) for full CLI reference.
+See [docs/cli.md](docs/cli.md) for full reference.
 
 ---
 
-## Integrations
+## Use without Tooling
 
-| Tool | Purpose | Docs |
-|------|---------|------|
-| **CLI** | Human interaction | [docs/cli.md](docs/cli.md) |
-| **MCP Server** | AI assistant integration | [docs/mcp.md](docs/mcp.md) |
-
-Both are thin wrappers around the spec. The files are the source of truth.
+You can also just create files manually. Make `.arx/journal/` and write markdown files following the spec above. Git tracks the history. No tools required.
 
 ---
 
