@@ -60,6 +60,56 @@ arx_add(type="decision", message="Revert to polling—WebSockets too complex", r
 - Capture the same decision twice
 - Capture implementation details (that's what git is for)
 
+## Execution Failure Capture
+
+When automated steps or commands fail during execution, capture immediately.
+
+### Step/Command Failure → `blocker`
+
+**Trigger:** A pipeline step, script, or automated command fails
+
+**Capture:**
+- **Type:** `blocker`
+- **Title:** Brief description of what failed
+- **Body:** Root cause, what was attempted, resolution if known
+- **Scope:** Affected file, component, or system
+
+```
+arx_add(type="blocker", message="Build failed - missing jwt import in auth.go", scope="backend/auth", body="Generated code referenced jwt.ParseToken but import was missing. Resolution: Added import manually.")
+```
+
+### Manual Intervention Required → `override`
+
+**Trigger:** Human must fix something the AI/automation got wrong
+
+**Capture:**
+- **Type:** `override`
+- **Title:** What was overridden
+- **Body:** What automation attempted, why it was wrong, what human did instead
+
+```
+arx_add(type="override", message="Manual fix for incorrect file path", scope="execute", body="Plan targeted src/auth.go but file is at pkg/auth/auth.go. Human corrected path.")
+```
+
+### Edge Case Discovered → `clarification`
+
+**Trigger:** Execution reveals an undocumented constraint or behavior
+
+**Capture:**
+- **Type:** `clarification`
+- **Title:** The discovery
+- **Body:** What was discovered, how, and impact
+
+```
+arx_add(type="clarification", message="API rate limit is 100/min not 1000/min", scope="api", body="Discovered during load test. Documentation was wrong. Affects batch processing design.")
+```
+
+### What NOT to Capture (Execution)
+
+- Routine successful completions (no learning value)
+- Transient errors that self-resolve (retries, network blips)
+- Errors already captured in the current session
+
 ## Examples
 
 ### Decision captured automatically
