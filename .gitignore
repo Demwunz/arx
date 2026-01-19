@@ -1,0 +1,10 @@
+# Binaries
+arx
+arx-mcp
+
+# Ripley state
+.ripley/
+execution/
+
+# Test artifacts
+.arx/
