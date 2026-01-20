@@ -1,6 +1,6 @@
 # Binaries
-arx
-arx-mcp
+/arx
+/arx-mcp
 
 # Ripley state
 .ripley/
