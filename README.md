@@ -116,7 +116,7 @@ supersedes: decision-2026-01-19-a1b2c3
 Requirements changed. Need multi-region.
 ```
 
-State (`active`, `superseded`, `reversed`) is computed by following links. Original entries are never modified.
+State (`active`, `superseded`, `reversed`) is computed by following the link chain — new entries point to old, never the reverse.
 
 ---
 
@@ -156,7 +156,9 @@ The original entry is never modified—its state updates to `superseded` or `rev
 
 ---
 
-## What Gets Captured
+## When to Record
+
+Decisions aren't the only things worth capturing. Any moment where the project's direction shifts — or *could* shift later — is worth a line in the journal:
 
 | Moment | Entry Type |
 |--------|------------|
@@ -168,31 +170,7 @@ The original entry is never modified—its state updates to `superseded` or `rev
 | Going against a recommendation | `override` |
 | Postponing for later | `defer` |
 
-The [AI skill file](skill/arx.md) teaches assistants when to capture automatically.
-
----
-
-## Design
-
-| Principle | Why |
-|-----------|-----|
-| **Flatfiles in git** | No database, no service. Commits with your code. |
-| **Immutable entries** | Never edit—supersede or reverse instead. |
-| **Backward links only** | New points to old. Preserves immutability. |
-| **Derived state** | Active/superseded/reversed computed at query time. |
-| **Compact archive** | Inactive entries move to `.arx/archive.jsonl`. Full history, zero clutter. |
-| **Model agnostic** | Works with any AI or none. |
-
----
-
-## The Key Insight
-
-**It turns "start over" into "continue from."**
-
-- Position is checkpointed
-- Decisions are journaled
-- Resume reconstructs context
-- Continuity survives session boundaries
+With the [AI skill file](skill/arx.md), assistants capture these automatically — you don't have to remember to ask.
 
 ---
 
