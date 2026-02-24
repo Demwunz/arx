@@ -122,6 +122,19 @@ impl fmt::Display for EntryState {
     }
 }
 
+impl FromStr for EntryState {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "active" => Ok(EntryState::Active),
+            "superseded" => Ok(EntryState::Superseded),
+            "reversed" => Ok(EntryState::Reversed),
+            _ => Err(format!("invalid entry state: {s}")),
+        }
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Entry {
     pub id: String,

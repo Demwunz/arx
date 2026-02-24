@@ -11,6 +11,8 @@ chrono = { workspace = true }
 thiserror = { workspace = true }
 rand = { workspace = true }
 hex = { workspace = true }
+topo-core = { workspace = true }
+topo-score = { workspace = true }
 
 [dev-dependencies]
 tempfile = { workspace = true }

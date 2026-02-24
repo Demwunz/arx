@@ -55,6 +55,54 @@ enum Commands {
         #[arg(default_value = "show")]
         subcommand: String,
     },
+    /// Search journal entries
+    Search {
+        /// Search query
+        #[arg(value_name = "QUERY")]
+        query: String,
+        /// Filter by entry type
+        #[arg(long = "type")]
+        type_filter: Option<String>,
+        /// Filter by state (active, superseded, reversed)
+        #[arg(long = "state")]
+        state_filter: Option<String>,
+        /// Filter by scope
+        #[arg(long)]
+        scope: Option<String>,
+        /// Maximum number of results (0 = no limit)
+        #[arg(long, default_value = "0")]
+        limit: usize,
+    },
+    /// Compact old/inactive entries into archive.jsonl
+    Compact {
+        /// Move entries older than this many days (default: 30)
+        #[arg(long = "older-than", default_value = "30")]
+        older_than: u32,
+    },
+    /// Create a new entry that supersedes an existing one
+    Supersede {
+        /// ID of the entry to supersede
+        #[arg(value_name = "OLD_ID")]
+        old_id: String,
+        /// Type of the new entry
+        #[arg(long = "type")]
+        entry_type: String,
+        /// Message for the new entry
+        #[arg(long = "message", short = 'm')]
+        message: String,
+        /// Scope for the new entry
+        #[arg(long)]
+        scope: Option<String>,
+    },
+    /// Reverse an existing entry by creating a tombstone
+    Reverse {
+        /// ID of the entry to reverse
+        #[arg(value_name = "TARGET_ID")]
+        target_id: String,
+        /// Reason for reversal
+        #[arg(long)]
+        reason: String,
+    },
     /// Generate resume context
     Resume {
         /// Print to stdout instead of file
@@ -86,6 +134,28 @@ fn main() {
             state_filter,
         } => cmd_list(&root, type_filter.as_deref(), state_filter.as_deref()),
         Commands::Show { id } => cmd_show(&root, &id),
+        Commands::Search {
+            query,
+            type_filter,
+            state_filter,
+            scope,
+            limit,
+        } => cmd_search(
+            &root,
+            &query,
+            type_filter.as_deref(),
+            state_filter.as_deref(),
+            scope.as_deref(),
+            limit,
+        ),
+        Commands::Compact { older_than } => cmd_compact(&root, older_than),
+        Commands::Supersede {
+            old_id,
+            entry_type,
+            message,
+            scope,
+        } => cmd_supersede(&root, &old_id, &entry_type, &message, scope.as_deref()),
+        Commands::Reverse { target_id, reason } => cmd_reverse(&root, &target_id, &reason),
         Commands::Checkpoint { subcommand } => cmd_checkpoint(&root, &subcommand),
         Commands::Resume { print } => cmd_resume(&root, print),
     };
@@ -182,6 +252,69 @@ fn cmd_show(root: &Path, id: &str) -> Result<(), Box<dyn std::error::Error>> {
         println!("\nContent:\n{}", entry.content);
     }
 
+    Ok(())
+}
+
+fn cmd_search(
+    root: &Path,
+    query: &str,
+    type_filter: Option<&str>,
+    state_filter: Option<&str>,
+    scope: Option<&str>,
+    limit: usize,
+) -> Result<(), Box<dyn std::error::Error>> {
+    let opts = arx::SearchOptions {
+        entry_type: type_filter.map(|s| s.to_string()),
+        state: state_filter.map(|s| s.to_string()),
+        scope: scope.map(|s| s.to_string()),
+        limit,
+    };
+
+    let results = arx::search_entries(root, query, &opts)?;
+
+    if results.is_empty() {
+        println!("No results found.");
+        return Ok(());
+    }
+
+    for r in &results {
+        println!(
+            "[{:.3}] [{}] {} ({}) - {}",
+            r.score, r.entry.state, r.entry.id, r.entry.entry_type, r.entry.title
+        );
+    }
+
+    Ok(())
+}
+
+fn cmd_compact(root: &Path, older_than: u32) -> Result<(), Box<dyn std::error::Error>> {
+    let result = arx::compact(root, older_than)?;
+    println!(
+        "Compacted: {} entries moved to archive, {} entries remaining in journal/",
+        result.moved, result.remaining
+    );
+    Ok(())
+}
+
+fn cmd_supersede(
+    root: &Path,
+    old_id: &str,
+    entry_type: &str,
+    message: &str,
+    scope: Option<&str>,
+) -> Result<(), Box<dyn std::error::Error>> {
+    let new_id = arx::supersede(root, old_id, entry_type, None, message, scope)?;
+    println!("Created entry: {new_id} (supersedes {old_id})");
+    Ok(())
+}
+
+fn cmd_reverse(
+    root: &Path,
+    target_id: &str,
+    reason: &str,
+) -> Result<(), Box<dyn std::error::Error>> {
+    let tombstone_id = arx::reverse(root, target_id, reason, None)?;
+    println!("Created tombstone: {tombstone_id} (reverses {target_id})");
     Ok(())
 }
 

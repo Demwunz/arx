@@ -42,6 +42,26 @@ struct ShowParams {
     id: String,
 }
 
+#[derive(Debug, Deserialize, schemars::JsonSchema)]
+struct SearchParams {
+    #[schemars(description = "Search query text")]
+    query: String,
+    #[schemars(description = "Filter by entry type")]
+    r#type: Option<String>,
+    #[schemars(description = "Filter by state: active, superseded, reversed")]
+    state: Option<String>,
+    #[schemars(description = "Filter by scope")]
+    scope: Option<String>,
+    #[schemars(description = "Maximum number of results (0 = no limit)")]
+    limit: Option<usize>,
+}
+
+#[derive(Debug, Deserialize, schemars::JsonSchema)]
+struct CompactParams {
+    #[schemars(description = "Move entries older than this many days (default: 30)")]
+    older_than: Option<u32>,
+}
+
 // --- Response structs (same JSON shape as Go) ---
 
 #[derive(Serialize)]
@@ -81,6 +101,30 @@ struct ShowResult {
     supersedes: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     reversed_by: Option<String>,
+}
+
+#[derive(Serialize)]
+struct SearchResultEntry {
+    id: String,
+    r#type: String,
+    state: String,
+    title: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    scope: Option<String>,
+    date: String,
+    score: f64,
+}
+
+#[derive(Serialize)]
+struct SearchResultResponse {
+    entries: Vec<SearchResultEntry>,
+    total: usize,
+}
+
+#[derive(Serialize)]
+struct CompactResponse {
+    moved: usize,
+    remaining: usize,
 }
 
 #[derive(Serialize)]
@@ -243,6 +287,56 @@ impl ArxServer {
         };
 
         serde_json::to_string(&result).unwrap()
+    }
+
+    #[tool(
+        description = "Search journal entries by query text using BM25F scoring",
+        name = "arx_search"
+    )]
+    async fn search(&self, #[tool(aggr)] params: SearchParams) -> String {
+        let opts = arx::SearchOptions {
+            entry_type: params.r#type,
+            state: params.state,
+            scope: params.scope,
+            limit: params.limit.unwrap_or(0),
+        };
+
+        let results = match arx::search_entries(&self.root, &params.query, &opts) {
+            Ok(r) => r,
+            Err(e) => return format!("search failed: {e}"),
+        };
+
+        let entries: Vec<SearchResultEntry> = results
+            .iter()
+            .map(|r| SearchResultEntry {
+                id: r.entry.id.clone(),
+                r#type: r.entry.entry_type.clone(),
+                state: r.entry.state.clone(),
+                title: r.entry.title.clone(),
+                scope: r.entry.scope.clone(),
+                date: r.entry.date.format("%Y-%m-%dT%H:%M:%SZ").to_string(),
+                score: r.score,
+            })
+            .collect();
+
+        let total = entries.len();
+        serde_json::to_string(&SearchResultResponse { entries, total }).unwrap()
+    }
+
+    #[tool(
+        description = "Compact old/inactive journal entries into archive.jsonl",
+        name = "arx_compact"
+    )]
+    async fn compact(&self, #[tool(aggr)] params: CompactParams) -> String {
+        let older_than = params.older_than.unwrap_or(30);
+        match arx::compact(&self.root, older_than) {
+            Ok(result) => serde_json::to_string(&CompactResponse {
+                moved: result.moved,
+                remaining: result.remaining,
+            })
+            .unwrap(),
+            Err(e) => format!("compact failed: {e}"),
+        }
     }
 
     #[tool(

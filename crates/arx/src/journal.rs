@@ -2,6 +2,7 @@ use std::collections::HashMap;
 use std::fs;
 use std::path::{Path, PathBuf};
 
+use crate::archive;
 use crate::entry::{Entry, EntryState, EntryWithState};
 use crate::error::ArxError;
 
@@ -35,7 +36,8 @@ pub fn write(root: &Path, entry: &Entry) -> Result<(), ArxError> {
     Ok(())
 }
 
-pub fn read_all(root: &Path) -> Result<Vec<Entry>, ArxError> {
+/// Read only the .md entries from journal/ directory.
+pub fn read_all_md(root: &Path) -> Result<Vec<Entry>, ArxError> {
     let dir = journal_dir(root);
     if !dir.exists() {
         return Ok(Vec::new());
@@ -55,8 +57,27 @@ pub fn read_all(root: &Path) -> Result<Vec<Entry>, ArxError> {
         entries.push(entry);
     }
 
+    Ok(entries)
+}
+
+/// Read all entries from both journal/*.md and archive.jsonl.
+pub fn read_all(root: &Path) -> Result<Vec<Entry>, ArxError> {
+    let mut entries = read_all_md(root)?;
+
+    let archived = archive::read_archive(root)?;
+    entries.extend(archived.into_iter().map(|a| a.into_entry()));
+
     entries.sort_by(|a, b| a.date.cmp(&b.date));
     Ok(entries)
+}
+
+/// Delete a journal .md file by entry ID.
+pub fn delete_entry_file(root: &Path, id: &str) -> Result<(), ArxError> {
+    let file_path = journal_dir(root).join(format!("{id}.md"));
+    if file_path.exists() {
+        fs::remove_file(&file_path)?;
+    }
+    Ok(())
 }
 
 fn read_entry(file_path: &Path) -> Result<Entry, ArxError> {
@@ -111,12 +132,13 @@ pub fn update_reversed_by(
 }
 
 pub fn get_state(root: &Path) -> Result<HashMap<String, EntryWithState>, ArxError> {
-    let entries = read_all(root)?;
+    // Start with .md entries
+    let md_entries = read_all_md(root)?;
 
     let mut state: HashMap<String, EntryWithState> = HashMap::new();
 
-    // First pass: add all entries as active
-    for e in &entries {
+    // First pass: add all .md entries as active
+    for e in &md_entries {
         state.insert(
             e.id.clone(),
             EntryWithState {
@@ -126,8 +148,21 @@ pub fn get_state(root: &Path) -> Result<HashMap<String, EntryWithState>, ArxErro
         );
     }
 
-    // Second pass: mark superseded and reversed
-    for e in &entries {
+    // Add archived entries with their stored state
+    let archived = archive::read_archive(root)?;
+    for ae in &archived {
+        state.insert(
+            ae.id.clone(),
+            EntryWithState {
+                entry: ae.clone().into_entry(),
+                state: ae.entry_state(),
+            },
+        );
+    }
+
+    // Second pass: mark superseded and reversed from relationships
+    let all_entries: Vec<Entry> = state.values().map(|ews| ews.entry.clone()).collect();
+    for e in &all_entries {
         if let Some(ref supersedes) = e.supersedes {
             if let Some(superseded) = state.get_mut(supersedes) {
                 superseded.state = EntryState::Superseded;
