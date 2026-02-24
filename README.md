@@ -16,7 +16,8 @@
 
 **1. Install**
 ```bash
-go install github.com/demwunz/arx/cmd/mcp@latest
+cargo install --path crates/arx-mcp
+cargo install --path crates/arx-cli
 ```
 
 **2. Configure** your AI client (Claude Code, Cursor, etc.)

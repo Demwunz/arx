@@ -1,0 +1,17 @@
+[package]
+name = "arx-mcp"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "arx-mcp"
+path = "src/main.rs"
+
+[dependencies]
+arx = { path = "../arx" }
+rmcp = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+chrono = { workspace = true }
+tokio = { workspace = true }
+anyhow = { workspace = true }
