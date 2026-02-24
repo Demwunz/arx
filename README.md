@@ -10,6 +10,30 @@
   <a href="skill/arx.md">AI Skill</a>
 </p>
 
+**arx** gives your AI sessions a decision journal — structured, searchable, and version-aware. Every decision, assumption, and override is captured as an immutable markdown entry with full lifecycle tracking.
+
+### How arx compares
+
+|  | Decisions | Lifecycle | Searchable | |
+|---|:-:|:-:|:-:|---|
+| **arx** | ✅ | ✅ | ✅ | Structured journal with full decision lifecycle |
+| **git log** | ❌ | ❌ | ⚠️ | Records _what_ changed — not _why_ or whether it still holds |
+| **MEMORY.md** | ⚠️ | ❌ | ❌ | Flat notes with no lifecycle — stale sits next to current |
+| **Project docs** | ⚠️ | ❌ | ❌ | Captures conclusions — not the reasoning or when overturned |
+| **ADRs** | ✅ | ⚠️ | ❌ | Heavy process — not built for micro-decisions in AI sessions |
+| **mem0** | ❌ | ❌ | ✅ | Stores facts for retrieval — not decision lifecycle |
+| **RAG** | ❌ | ❌ | ✅ | Retrieves documents — doesn't track what's still valid |
+| **Chat history** | ❌ | ❌ | ❌ | Captures everything — surfaces nothing |
+
+### What you get
+
+🔗 **Decision lifecycle** — track decisions from active through superseded or reversed
+🔍 **Full-text search** — BM25F ranked search across titles, scopes, and content
+📁 **Git-native** — plain markdown files that commit alongside your code
+🤖 **AI-native** — MCP server for Claude Code, Cursor, and any MCP client
+📦 **Compact archive** — inactive entries move to append-only archive, active stay editable
+🔒 **Immutable by design** — entries are never modified, only linked forward
+
 ---
 
 ## Quick Start
@@ -102,26 +126,6 @@ arx reverse assumption-2026-01-19-g7h8i9 --reason "Load tests disproved this"
 ```
 
 The original entry is never modified—its state updates to `superseded` or `reversed` by following the chain of links.
-
----
-
-## Why arx?
-
-**The problem**: AI assistants forget. Context window exhaustion is invisible failure. Decisions made yesterday are lost today.
-
-**Existing tools don't fit:**
-
-| Tool | Gap |
-|------|-----|
-| **git log** | Records _what_ changed—not _why_ or whether it's still the right call |
-| **MEMORY.md** | Flat notes with no lifecycle—stale entries sit next to current ones |
-| **Project docs** | Captures conclusions—not the reasoning or when they were overturned |
-| **mem0** | Stores facts for retrieval—not decision lifecycle |
-| **RAG** | Retrieves documents—doesn't track what's still valid |
-| **Chat history** | Captures everything—surfaces nothing |
-| **ADRs** | Heavy process—not for micro-decisions in AI sessions |
-
-**arx fills the gap**: a structured journal that tracks the lifecycle of decisions—when they were made, by whom, and whether they're still active.
 
 ---
 
