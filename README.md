@@ -12,6 +12,15 @@
 
 **arx** gives your AI sessions a decision journal — structured, searchable, and version-aware. Every decision, assumption, and override is captured as an immutable markdown entry with full lifecycle tracking.
 
+### Features
+
+- 🔗 **Decision lifecycle** — track decisions from active through superseded or reversed
+- 🔍 **Full-text search** — BM25F ranked search across titles, scopes, and content
+- 📁 **Git-native** — plain markdown files that commit alongside your code
+- 🤖 **AI-native** — MCP server for Claude Code, Cursor, and any MCP client
+- 📦 **Compact archive** — inactive entries move to append-only archive, active stay editable
+- 🔒 **Immutable by design** — entries are never modified, only linked forward
+
 ### How arx compares
 
 |  | Decisions | Lifecycle | Searchable | |
@@ -24,15 +33,6 @@
 | **mem0** | ❌ | ❌ | ✅ | Stores facts for retrieval — not decision lifecycle |
 | **RAG** | ❌ | ❌ | ✅ | Retrieves documents — doesn't track what's still valid |
 | **Chat history** | ❌ | ❌ | ❌ | Captures everything — surfaces nothing |
-
-### What you get
-
-🔗 **Decision lifecycle** — track decisions from active through superseded or reversed
-🔍 **Full-text search** — BM25F ranked search across titles, scopes, and content
-📁 **Git-native** — plain markdown files that commit alongside your code
-🤖 **AI-native** — MCP server for Claude Code, Cursor, and any MCP client
-📦 **Compact archive** — inactive entries move to append-only archive, active stay editable
-🔒 **Immutable by design** — entries are never modified, only linked forward
 
 ---
 
