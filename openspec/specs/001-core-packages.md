@@ -1,38 +1,38 @@
 # Arx Core Packages
 
-**Status:** Draft
+**Status:** Implemented
 **Created:** 2026-01-19
 
 ## Problem Statement
 
-Build the core Go packages for journal entries and checkpoint management.
+Build the core library for journal entries and checkpoint management.
 
 ## Requirements
 
 ### Project Setup
 
-1. The project SHALL use Go modules with module path `github.com/demwunz/arx`
-2. The project SHALL use gopkg.in/yaml.v3 for YAML parsing
+1. The project SHALL use a Cargo workspace with the core library at `crates/arx/`
+2. The project SHALL use serde_yml for YAML parsing
 
-### Journal Package
+### Journal Module
 
 3. Journal entries SHALL be stored in `.arx/journal/` directory
 4. Each entry SHALL have a unique ID in format: `{type}-{YYYY-MM-DD}-{6-char-hex}`
 5. Entry types SHALL be: `clarification`, `decision`, `override`, `blocker`, `assumption`, `risk`, `defer`, `tombstone`
 6. Actor types SHALL be: `human`, `planner`, `executor`, `reviewer`, `system`
-7. The journal package SHALL implement `GenerateID()` function
-8. The journal package SHALL implement `Write()` to save entries with YAML frontmatter
-9. The journal package SHALL implement `ReadAll()` to load all entries sorted by date
-10. The journal package SHALL implement `GetState()` to compute derived state
+7. The journal module SHALL implement `generate_id()` function
+8. The journal module SHALL implement `write()` to save entries with YAML frontmatter
+9. The journal module SHALL implement `read_all()` to load all entries sorted by date
+10. The journal module SHALL implement `get_state()` to compute derived state
 
-### Checkpoint Package
+### Checkpoint Module
 
 11. Checkpoint SHALL be stored at `.arx/checkpoint.json`
 12. Checkpoint SHALL have required fields: `version`, `task_id`, `started_at`, `last_activity`, `status`
-13. The checkpoint package SHALL implement `Save()` with auto-initialization of defaults
-14. The checkpoint package SHALL implement `Load()` returning nil if no checkpoint exists
-15. The checkpoint package SHALL implement `Clear()` to remove checkpoint
-16. The checkpoint package SHALL implement `IsStale()` with 72-hour default threshold
+13. The checkpoint module SHALL implement `save()` with auto-initialization of defaults
+14. The checkpoint module SHALL implement `load()` returning `None` if no checkpoint exists
+15. The checkpoint module SHALL implement `clear()` to remove checkpoint
+16. The checkpoint module SHALL implement `is_stale()` with 72-hour default threshold
 
 ### Testing
 
@@ -43,7 +43,7 @@ Build the core Go packages for journal entries and checkpoint management.
 
 ## Acceptance Criteria
 
-1. `go build ./...` succeeds
-2. `go test ./...` passes with all tests green
+1. `cargo build -p arx` succeeds
+2. `cargo test -p arx` passes with all tests green
 3. Journal entries can be written and read back
 4. Checkpoint can be saved, loaded, and cleared

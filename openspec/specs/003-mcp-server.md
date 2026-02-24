@@ -1,8 +1,8 @@
 # Arx MCP Server
 
-**Status:** Draft
+**Status:** Implemented
 **Created:** 2026-01-19
-**Depends:** 001-core-packages, 002-cli-commands
+**Depends:** 001-core-packages, 002-public-api
 
 ## Purpose
 
@@ -12,9 +12,9 @@ Expose arx journal and checkpoint functionality as MCP tools for AI assistant in
 
 ### Server Structure
 
-1. The MCP server SHALL be implemented in `cmd/mcp/main.go`
+1. The MCP server SHALL be implemented in `crates/arx-mcp/src/main.rs`
 2. The server SHALL use stdio transport for MCP communication
-3. The server SHALL implement the MCP tools protocol
+3. The server SHALL implement the MCP tools protocol via the rmcp crate
 
 ### Tools
 

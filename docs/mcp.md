@@ -5,7 +5,7 @@ The arx MCP server exposes journal and checkpoint functionality as tools for AI 
 ## Installation
 
 ```bash
-go install github.com/demwunz/arx/cmd/mcp@latest
+cargo install --path crates/arx-mcp
 ```
 
 This installs `arx-mcp`.

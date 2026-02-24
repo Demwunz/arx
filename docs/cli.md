@@ -5,7 +5,7 @@ The arx CLI is a thin wrapper around the spec. You can always create files manua
 ## Installation
 
 ```bash
-go install github.com/demwunz/arx@latest
+cargo install --path crates/arx-cli
 ```
 
 ## Commands
