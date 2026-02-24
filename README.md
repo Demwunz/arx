@@ -32,6 +32,7 @@ cargo install --path crates/arx-cli
 **3. Use** — the AI captures decisions automatically, or ask explicitly:
 > "What decisions have we made?"
 > "Record that we chose PostgreSQL for the database"
+> "Search for decisions about the database"
 
 ---
 
@@ -68,6 +69,42 @@ State (`active`, `superseded`, `reversed`) is computed by following links. Origi
 
 ---
 
+## Search & Compaction
+
+Find any decision instantly—arx uses ranked full-text search across titles, scopes, and content:
+
+```bash
+arx search "PostgreSQL"
+# [1.842] [active] decision-2026-01-19-d4e5f6 (decision) - Switch to CockroachDB
+# [0.917] [superseded] decision-2026-01-19-a1b2c3 (decision) - Use PostgreSQL
+
+arx search "database" --type decision --state active
+```
+
+Over time, superseded and reversed entries compact into an archive—keeping the journal lean while preserving full history:
+
+```bash
+arx compact --older-than 30
+# Compacted: 12 entries moved to archive, 5 entries remaining in journal/
+```
+
+Nothing is lost. Active entries stay as editable markdown. Inactive entries move to `.arx/archive.jsonl`—append-only, git-diffable, and still searchable.
+
+---
+
+## Supersede & Reverse
+
+Decisions change. arx tracks the lineage:
+
+```bash
+arx supersede decision-2026-01-19-a1b2c3 --type decision -m "Switch to CockroachDB"
+arx reverse assumption-2026-01-19-g7h8i9 --reason "Load tests disproved this"
+```
+
+The original entry is never modified—its state updates to `superseded` or `reversed` by following the chain of links.
+
+---
+
 ## Why arx?
 
 **The problem**: AI assistants forget. Context window exhaustion is invisible failure. Decisions made yesterday are lost today.
@@ -76,6 +113,9 @@ State (`active`, `superseded`, `reversed`) is computed by following links. Origi
 
 | Tool | Gap |
 |------|-----|
+| **git log** | Records _what_ changed—not _why_ or whether it's still the right call |
+| **MEMORY.md** | Flat notes with no lifecycle—stale entries sit next to current ones |
+| **Project docs** | Captures conclusions—not the reasoning or when they were overturned |
 | **mem0** | Stores facts for retrieval—not decision lifecycle |
 | **RAG** | Retrieves documents—doesn't track what's still valid |
 | **Chat history** | Captures everything—surfaces nothing |
@@ -109,6 +149,7 @@ The [AI skill file](skill/arx.md) teaches assistants when to capture automatical
 | **Immutable entries** | Never edit—supersede or reverse instead. |
 | **Backward links only** | New points to old. Preserves immutability. |
 | **Derived state** | Active/superseded/reversed computed at query time. |
+| **Compact archive** | Inactive entries move to `.arx/archive.jsonl`. Full history, zero clutter. |
 | **Model agnostic** | Works with any AI or none. |
 
 ---
