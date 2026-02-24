@@ -9,5 +9,15 @@
 .ripley/
 execution/
 
+# Tool state
+.claude/
+.topo/
+
+# OS files
+.DS_Store
+
+# Validation artifacts
+spec_validation.json
+
 # Test artifacts
 .arx/
