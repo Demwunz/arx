@@ -26,14 +26,14 @@
 
 |  | Decisions | Lifecycle | Searchable | |
 |---|:-:|:-:|:-:|---|
-| **arx** | ✅ | ✅ | ✅ | Structured journal with full decision lifecycle |
-| **git log** | ❌ | ❌ | ⚠️ | Records _what_ changed — not _why_ or whether it still holds |
-| **MEMORY.md** | ⚠️ | ❌ | ❌ | Flat notes with no lifecycle — stale sits next to current |
-| **Project docs** | ⚠️ | ❌ | ❌ | Captures conclusions — not the reasoning or when overturned |
-| **ADRs** | ✅ | ⚠️ | ❌ | Heavy process — not built for micro-decisions in AI sessions |
-| **mem0** | ❌ | ❌ | ✅ | Stores facts for retrieval — not decision lifecycle |
-| **RAG** | ❌ | ❌ | ✅ | Retrieves documents — doesn't track what's still valid |
-| **Chat history** | ❌ | ❌ | ❌ | Captures everything — surfaces nothing |
+| **arx** | ✓ | ✓ | ✓ | Structured journal with full decision lifecycle |
+| **git log** | ✗ | ✗ | ~ | Records _what_ changed — not _why_ or whether it still holds |
+| **MEMORY.md** | ~ | ✗ | ✗ | Flat notes with no lifecycle — stale sits next to current |
+| **Project docs** | ~ | ✗ | ✗ | Captures conclusions — not the reasoning or when overturned |
+| **ADRs** | ✓ | ~ | ✗ | Heavy process — not built for micro-decisions in AI sessions |
+| **mem0** | ✗ | ✗ | ✓ | Stores facts for retrieval — not decision lifecycle |
+| **RAG** | ✗ | ✗ | ✓ | Retrieves documents — doesn't track what's still valid |
+| **Chat history** | ✗ | ✗ | ✗ | Captures everything — surfaces nothing |
 
 ---
 
