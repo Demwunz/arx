@@ -34,6 +34,11 @@ At **session start**, check for existing context:
 2. Call `arx_list` with `state=active` — what decisions are current?
 3. If resuming, call `arx_resume` to generate full context
 
+## When to Search or Compact
+
+- Use `arx_search` to find relevant decisions before making new ones — avoids duplicates and surfaces context
+- Use `arx_compact` when the journal grows large — moves inactive entries to archive while keeping active ones editable
+
 ## When to Supersede or Reverse
 
 **Supersede** when requirements changed or a better approach is found:

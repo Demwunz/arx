@@ -4,6 +4,7 @@
 </p>
 
 <p align="center">
+  <a href="#quick-start">Quick Start</a> •
   <a href="docs/spec.md">Spec</a> •
   <a href="docs/cli.md">CLI</a> •
   <a href="docs/mcp.md">MCP</a> •
@@ -33,6 +34,32 @@
 | **mem0** | ❌ | ❌ | ✅ | Stores facts for retrieval — not decision lifecycle |
 | **RAG** | ❌ | ❌ | ✅ | Retrieves documents — doesn't track what's still valid |
 | **Chat history** | ❌ | ❌ | ❌ | Captures everything — surfaces nothing |
+
+---
+
+## See It in Action
+
+```bash
+# Chose between alternatives? Record it.
+arx add decision "Use PostgreSQL for primary storage"
+
+# Proceeding on something unverified? Note the assumption.
+arx add assumption "API handles 1000 req/s" --scope backend
+
+# Acknowledging a risk? Log it before you forget.
+arx add risk "Skipping tests to hit deadline" --scope testing
+```
+
+Every entry is an immutable markdown file in `.arx/journal/`. See what's current:
+
+```bash
+arx list --state active
+# [active] decision-2026-01-19-a1b2c3 (decision) - Use PostgreSQL for primary storage
+# [active] assumption-2026-01-19-b4c5d6 (assumption) - API handles 1000 req/s
+# [active] risk-2026-01-19-e7f8a9 (risk) - Skipping tests to hit deadline
+```
+
+When decisions change, arx tracks the [full lifecycle](#supersede--reverse) — supersede, reverse, [search](#search--compaction), and compact.
 
 ---
 

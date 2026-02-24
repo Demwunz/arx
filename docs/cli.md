@@ -154,6 +154,86 @@ arx resume --print
 - Active journal entries
 - Ready-to-use context for AI sessions
 
+### search
+
+Search journal entries by query text.
+
+```bash
+arx search <QUERY> [flags]
+```
+
+**Flags:**
+- `--type` — Filter by entry type
+- `--state` — Filter by state (active, superseded, reversed)
+- `--scope` — Filter by scope
+- `--limit` — Maximum results (0 = no limit, default)
+
+**Examples:**
+
+```bash
+arx search "PostgreSQL"
+# [1.842] [active] decision-2026-01-19-d4e5f6 (decision) - Switch to CockroachDB
+# [0.917] [superseded] decision-2026-01-19-a1b2c3 (decision) - Use PostgreSQL
+
+arx search "database" --type decision --state active
+```
+
+### compact
+
+Compact old/inactive journal entries into archive.
+
+```bash
+arx compact [flags]
+```
+
+**Flags:**
+- `--older-than` — Move entries older than this many days (default: 30)
+
+**Examples:**
+
+```bash
+arx compact --older-than 30
+# Compacted: 12 entries moved to archive, 5 entries remaining in journal/
+```
+
+### supersede
+
+Create a new entry that supersedes an existing one.
+
+```bash
+arx supersede <OLD_ID> --type <TYPE> -m "<MESSAGE>" [flags]
+```
+
+**Flags:**
+- `--type` — Type of the new entry (required)
+- `-m` / `--message` — Message for the new entry (required)
+- `--scope` — Scope for the new entry
+
+**Examples:**
+
+```bash
+arx supersede decision-2026-01-19-a1b2c3 --type decision -m "Switch to CockroachDB"
+# Created entry: decision-2026-01-19-d4e5f6 (supersedes decision-2026-01-19-a1b2c3)
+```
+
+### reverse
+
+Create a tombstone entry that reverses an existing one.
+
+```bash
+arx reverse <TARGET_ID> --reason "<REASON>"
+```
+
+**Flags:**
+- `--reason` — Reason for reversal (required)
+
+**Examples:**
+
+```bash
+arx reverse assumption-2026-01-19-g7h8i9 --reason "Load tests disproved this"
+# Created tombstone: tombstone-2026-01-19-j1k2l3 (reverses assumption-2026-01-19-g7h8i9)
+```
+
 ## Exit Codes
 
 - `0` — Success

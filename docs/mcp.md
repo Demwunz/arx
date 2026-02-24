@@ -142,6 +142,51 @@ Generate resume context as markdown.
 }
 ```
 
+### arx_search
+
+Search journal entries by query text using BM25F scoring.
+
+**Parameters:**
+- `query` (required) — Search query text
+- `type` (optional) — Filter by entry type
+- `state` (optional) — Filter by state
+- `scope` (optional) — Filter by scope
+- `limit` (optional) — Maximum results (0 = no limit)
+
+**Returns:** JSON with entries array and total count
+
+```json
+{
+  "entries": [
+    {
+      "id": "decision-2026-01-19-d4e5f6",
+      "type": "decision",
+      "state": "active",
+      "title": "Switch to CockroachDB",
+      "date": "2026-01-19T16:45:00Z",
+      "score": 1.842
+    }
+  ],
+  "total": 1
+}
+```
+
+### arx_compact
+
+Compact old/inactive journal entries into archive.jsonl.
+
+**Parameters:**
+- `older_than` (optional) — Days threshold (default: 30)
+
+**Returns:** JSON with moved and remaining counts
+
+```json
+{
+  "moved": 12,
+  "remaining": 5
+}
+```
+
 ## Error Handling
 
 All tools return errors as tool result errors with descriptive messages:

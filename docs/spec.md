@@ -8,6 +8,7 @@ The full format specification for arx decision records.
 .arx/
 ├── journal/              # Decision entries (append-only)
 │   └── *.md
+├── archive.jsonl         # Compacted inactive entries (append-only)
 ├── checkpoint.json       # Session state (overwrite)
 └── resume-prompt.md      # Generated context
 ```
