@@ -71,6 +71,12 @@ cargo install --path crates/arx-mcp
 cargo install --path crates/arx-cli
 ```
 
+**Pi (AI coding agent):**
+```bash
+pi install git:github.com/Demwunz/pi-wobot
+```
+Registers the `journal` tool. See [pi-wobot](https://github.com/Demwunz/pi-wobot) for details.
+
 **2. Configure** your AI client (Claude Code, Cursor, etc.)
 ```json
 {
