@@ -193,4 +193,4 @@ With the [AI skill file](skill/arx.md), assistants capture these automatically â
 
 ## License
 
-MIT
+MIT with [Commons Clause](LICENSE). Free to use, modify, and redistribute â€” but not to sell as part of a paid product.
