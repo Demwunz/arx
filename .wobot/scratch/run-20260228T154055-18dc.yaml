@@ -1,0 +1,28 @@
+intent: Fix test paths after .arx/ prefix removal
+scope: small
+tier: quick
+mutations:
+- file: crates/arx/src/lib.rs
+  edits:
+  - find: |2
+              // Verify the .md file has body content after frontmatter
+              let file = root.join(format!(".arx/journal/{id}.md"));
+    find_file: ''
+    operation: replace
+    content: |2
+              // Verify the .md file has body content after frontmatter
+              let file = root.join(format!("journal/{id}.md"));
+    content_file: ''
+  - find: |2
+              let id = record(root, "decision", None, "Simple decision", None, None, None).unwrap();
+
+              let file = root.join(format!(".arx/journal/{id}.md"));
+    find_file: ''
+    operation: replace
+    content: |2
+              let id = record(root, "decision", None, "Simple decision", None, None, None).unwrap();
+
+              let file = root.join(format!("journal/{id}.md"));
+    content_file: ''
+new_files: []
+delete_files: []

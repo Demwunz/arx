@@ -1,0 +1,82 @@
+{
+  "version": 1,
+  "pipeline_id": "run-20260228T154056-8669",
+  "completed_steps": [
+    "validate-intent",
+    "dry-run-validate",
+    "compile-check",
+    "mutate",
+    "compliance-review"
+  ],
+  "outputs": {
+    "dry-run-validate": {
+      "diffs": {
+        "crates/arx/src/lib.rs": "--- a/crates/arx/src/lib.rs\n+++ b/crates/arx/src/lib.rs\n@@ -449,7 +449,7 @@\n         .unwrap();\n \n         // Verify the .md file has body content after frontmatter\n-        let file = root.join(format!(\".arx/journal/{id}.md\"));\n+        let file = root.join(format!(\"journal/{id}.md\"));\n         let content = std::fs::read_to_string(&file).unwrap();\n         assert!(content.contains(\"---\\n\\nServer captures machine decisions\"));\n \n@@ -467,7 +467,7 @@\n \n         let id = record(root, \"decision\", None, \"Simple decision\", None, None, None).unwrap();\n \n-        let file = root.join(format!(\".arx/journal/{id}.md\"));\n+        let file = root.join(format!(\"journal/{id}.md\"));\n         let content = std::fs::read_to_string(&file).unwrap();\n         assert!(content.trim().ends_with(\"---\"));\n \n"
+      },
+      "files_changed": [
+        "crates/arx/src/lib.rs"
+      ],
+      "run_id": "etch-1772293256013-98876",
+      "safety_checks": [
+        {
+          "file": "crates/arx/src/lib.rs",
+          "result": "ok",
+          "root": "/Users/fazal/dev/arx/crates/arx/src"
+        }
+      ],
+      "status": "dry-run"
+    },
+    "mutate": {
+      "diffs": {
+        "crates/arx/src/lib.rs": "--- a/crates/arx/src/lib.rs\n+++ b/crates/arx/src/lib.rs\n@@ -449,7 +449,7 @@\n         .unwrap();\n \n         // Verify the .md file has body content after frontmatter\n-        let file = root.join(format!(\".arx/journal/{id}.md\"));\n+        let file = root.join(format!(\"journal/{id}.md\"));\n         let content = std::fs::read_to_string(&file).unwrap();\n         assert!(content.contains(\"---\\n\\nServer captures machine decisions\"));\n \n@@ -467,7 +467,7 @@\n \n         let id = record(root, \"decision\", None, \"Simple decision\", None, None, None).unwrap();\n \n-        let file = root.join(format!(\".arx/journal/{id}.md\"));\n+        let file = root.join(format!(\"journal/{id}.md\"));\n         let content = std::fs::read_to_string(&file).unwrap();\n         assert!(content.trim().ends_with(\"---\"));\n \n"
+      },
+      "files_changed": [
+        "crates/arx/src/lib.rs"
+      ],
+      "run_id": "etch-1772293256075-98899",
+      "safety_checks": [
+        {
+          "file": "crates/arx/src/lib.rs",
+          "result": "ok",
+          "root": "/Users/fazal/dev/arx/crates/arx/src"
+        }
+      ],
+      "status": "applied"
+    },
+    "validate-intent": {
+      "output": "Intent '/Users/fazal/dev/arx/.wobot/run-artifacts/run-20260228T154056-8669/intent.yaml' validated successfully",
+      "valid": true
+    },
+    "compliance-review": {
+      "checks_run": [
+        "governance_compliance",
+        "scope_check",
+        "classification_audit",
+        "drift_check"
+      ],
+      "findings": [
+        {
+          "check": "governance_compliance",
+          "message": "wobot config not found",
+          "severity": "warn"
+        },
+        {
+          "check": "drift_check",
+          "message": "provenance file not found — drift detection unavailable",
+          "severity": "warn"
+        }
+      ],
+      "summary": "4 checks run, 2 findings (0 errors, 2 warnings)",
+      "verdict": "warn"
+    },
+    "compile-check": {
+      "exit_code": 0,
+      "files_touched": [],
+      "output": "Checking arx v0.1.0 (/Users/fazal/dev/arx/crates/arx)\n    Checking arx-mcp v0.1.0 (/Users/fazal/dev/arx/crates/arx-mcp)\n    Checking arx-cli v0.1.0 (/Users/fazal/dev/arx/crates/arx-cli)\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.24s"
+    }
+  },
+  "current_step": null,
+  "gate_decisions": {},
+  "signals": {},
+  "loop_counters": {}
+}

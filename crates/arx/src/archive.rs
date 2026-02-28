@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 use crate::entry::{ActorType, Entry, EntryState, EntryType};
 use crate::error::ArxError;
 
-const ARCHIVE_FILE: &str = ".arx/archive.jsonl";
+const ARCHIVE_FILE: &str = "archive.jsonl";
 
 /// Entry as stored in archive.jsonl (includes content and state).
 #[derive(Debug, Clone, Serialize, Deserialize)]

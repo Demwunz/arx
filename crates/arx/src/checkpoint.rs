@@ -5,7 +5,7 @@ use std::path::Path;
 
 use crate::error::ArxError;
 
-const CHECKPOINT_PATH: &str = ".arx/checkpoint.json";
+const CHECKPOINT_PATH: &str = "checkpoint.json";
 const STALE_HOURS: i64 = 72;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

@@ -1,0 +1,110 @@
+{
+  "version": 1,
+  "pipeline_id": "run-20260228T154028-e578",
+  "completed_steps": [
+    "mutate",
+    "compile-check",
+    "dry-run-validate",
+    "validate-intent",
+    "compliance-review"
+  ],
+  "outputs": {
+    "validate-intent": {
+      "output": "Intent '/Users/fazal/dev/arx/.wobot/run-artifacts/run-20260228T154028-e578/intent.yaml' validated successfully",
+      "valid": true
+    },
+    "dry-run-validate": {
+      "diffs": {
+        "crates/arx/src/archive.rs": "--- a/crates/arx/src/archive.rs\n+++ b/crates/arx/src/archive.rs\n@@ -8,7 +8,7 @@\n use crate::entry::{ActorType, Entry, EntryState, EntryType};\n use crate::error::ArxError;\n \n-const ARCHIVE_FILE: &str = \".arx/archive.jsonl\";\n+const ARCHIVE_FILE: &str = \"archive.jsonl\";\n \n /// Entry as stored in archive.jsonl (includes content and state).\n #[derive(Debug, Clone, Serialize, Deserialize)]\n",
+        "crates/arx/src/checkpoint.rs": "--- a/crates/arx/src/checkpoint.rs\n+++ b/crates/arx/src/checkpoint.rs\n@@ -5,7 +5,7 @@\n \n use crate::error::ArxError;\n \n-const CHECKPOINT_PATH: &str = \".arx/checkpoint.json\";\n+const CHECKPOINT_PATH: &str = \"checkpoint.json\";\n const STALE_HOURS: i64 = 72;\n \n #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]\n",
+        "crates/arx/src/journal.rs": "--- a/crates/arx/src/journal.rs\n+++ b/crates/arx/src/journal.rs\n@@ -6,7 +6,7 @@\n use crate::entry::{Entry, EntryState, EntryWithState};\n use crate::error::ArxError;\n \n-const JOURNAL_DIR: &str = \".arx/journal\";\n+const JOURNAL_DIR: &str = \"journal\";\n \n pub fn journal_dir(root: &Path) -> PathBuf {\n     root.join(JOURNAL_DIR)\n"
+      },
+      "files_changed": [
+        "crates/arx/src/journal.rs",
+        "crates/arx/src/archive.rs",
+        "crates/arx/src/checkpoint.rs"
+      ],
+      "run_id": "etch-1772293228267-98584",
+      "safety_checks": [
+        {
+          "file": "crates/arx/src/journal.rs",
+          "result": "ok",
+          "root": "/Users/fazal/dev/arx/crates/arx/src"
+        },
+        {
+          "file": "crates/arx/src/archive.rs",
+          "result": "ok",
+          "root": "/Users/fazal/dev/arx/crates/arx/src"
+        },
+        {
+          "file": "crates/arx/src/checkpoint.rs",
+          "result": "ok",
+          "root": "/Users/fazal/dev/arx/crates/arx/src"
+        }
+      ],
+      "status": "dry-run"
+    },
+    "compile-check": {
+      "exit_code": 0,
+      "files_touched": [],
+      "output": "Checking arx v0.1.0 (/Users/fazal/dev/arx/crates/arx)\n    Checking arx-cli v0.1.0 (/Users/fazal/dev/arx/crates/arx-cli)\n    Checking arx-mcp v0.1.0 (/Users/fazal/dev/arx/crates/arx-mcp)\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.59s"
+    },
+    "compliance-review": {
+      "checks_run": [
+        "governance_compliance",
+        "scope_check",
+        "classification_audit",
+        "drift_check"
+      ],
+      "findings": [
+        {
+          "check": "governance_compliance",
+          "message": "wobot config not found",
+          "severity": "warn"
+        },
+        {
+          "check": "drift_check",
+          "message": "provenance file not found — drift detection unavailable",
+          "severity": "warn"
+        }
+      ],
+      "summary": "4 checks run, 2 findings (0 errors, 2 warnings)",
+      "verdict": "warn"
+    },
+    "mutate": {
+      "diffs": {
+        "crates/arx/src/archive.rs": "--- a/crates/arx/src/archive.rs\n+++ b/crates/arx/src/archive.rs\n@@ -8,7 +8,7 @@\n use crate::entry::{ActorType, Entry, EntryState, EntryType};\n use crate::error::ArxError;\n \n-const ARCHIVE_FILE: &str = \".arx/archive.jsonl\";\n+const ARCHIVE_FILE: &str = \"archive.jsonl\";\n \n /// Entry as stored in archive.jsonl (includes content and state).\n #[derive(Debug, Clone, Serialize, Deserialize)]\n",
+        "crates/arx/src/checkpoint.rs": "--- a/crates/arx/src/checkpoint.rs\n+++ b/crates/arx/src/checkpoint.rs\n@@ -5,7 +5,7 @@\n \n use crate::error::ArxError;\n \n-const CHECKPOINT_PATH: &str = \".arx/checkpoint.json\";\n+const CHECKPOINT_PATH: &str = \"checkpoint.json\";\n const STALE_HOURS: i64 = 72;\n \n #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]\n",
+        "crates/arx/src/journal.rs": "--- a/crates/arx/src/journal.rs\n+++ b/crates/arx/src/journal.rs\n@@ -6,7 +6,7 @@\n use crate::entry::{Entry, EntryState, EntryWithState};\n use crate::error::ArxError;\n \n-const JOURNAL_DIR: &str = \".arx/journal\";\n+const JOURNAL_DIR: &str = \"journal\";\n \n pub fn journal_dir(root: &Path) -> PathBuf {\n     root.join(JOURNAL_DIR)\n"
+      },
+      "files_changed": [
+        "crates/arx/src/journal.rs",
+        "crates/arx/src/archive.rs",
+        "crates/arx/src/checkpoint.rs"
+      ],
+      "run_id": "etch-1772293228362-98607",
+      "safety_checks": [
+        {
+          "file": "crates/arx/src/journal.rs",
+          "result": "ok",
+          "root": "/Users/fazal/dev/arx/crates/arx/src"
+        },
+        {
+          "file": "crates/arx/src/archive.rs",
+          "result": "ok",
+          "root": "/Users/fazal/dev/arx/crates/arx/src"
+        },
+        {
+          "file": "crates/arx/src/checkpoint.rs",
+          "result": "ok",
+          "root": "/Users/fazal/dev/arx/crates/arx/src"
+        }
+      ],
+      "status": "applied"
+    }
+  },
+  "current_step": null,
+  "gate_decisions": {},
+  "signals": {},
+  "loop_counters": {}
+}

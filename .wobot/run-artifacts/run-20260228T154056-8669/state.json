@@ -1,0 +1,10 @@
+{
+  "description": "Fix test paths after .arx/ prefix removal",
+  "intent_file": "/Users/fazal/dev/arx/.wobot/run-artifacts/run-20260228T154056-8669/intent.yaml",
+  "last_run": "2026-02-28T15:40:56.412359+00:00",
+  "pipeline_file": "/Users/fazal/dev/arx/.wobot/run-artifacts/run-20260228T154056-8669/pipeline.yaml",
+  "profile": "solo",
+  "run_id": "run-20260228T154056-8669",
+  "status": "completed",
+  "version": "1.0"
+}

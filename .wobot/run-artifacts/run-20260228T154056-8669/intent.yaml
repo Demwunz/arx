@@ -1,0 +1,7 @@
+description: Fix test paths after .arx/ prefix removal
+goals:
+- Fix test paths after .arx/ prefix removal
+id: run-20260228T154056-8669
+scope: small
+status: accepted
+tier: quick

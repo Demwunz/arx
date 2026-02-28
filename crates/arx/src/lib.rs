@@ -449,7 +449,7 @@ mod tests {
         .unwrap();
 
         // Verify the .md file has body content after frontmatter
-        let file = root.join(format!(".arx/journal/{id}.md"));
+        let file = root.join(format!("journal/{id}.md"));
         let content = std::fs::read_to_string(&file).unwrap();
         assert!(content.contains("---\n\nServer captures machine decisions"));
 
@@ -467,7 +467,7 @@ mod tests {
 
         let id = record(root, "decision", None, "Simple decision", None, None, None).unwrap();
 
-        let file = root.join(format!(".arx/journal/{id}.md"));
+        let file = root.join(format!("journal/{id}.md"));
         let content = std::fs::read_to_string(&file).unwrap();
         assert!(content.trim().ends_with("---"));
 

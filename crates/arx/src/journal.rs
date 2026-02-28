@@ -6,7 +6,7 @@ use crate::archive;
 use crate::entry::{Entry, EntryState, EntryWithState};
 use crate::error::ArxError;
 
-const JOURNAL_DIR: &str = ".arx/journal";
+const JOURNAL_DIR: &str = "journal";
 
 pub fn journal_dir(root: &Path) -> PathBuf {
     root.join(JOURNAL_DIR)

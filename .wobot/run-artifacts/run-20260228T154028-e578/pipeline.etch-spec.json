@@ -1,0 +1,42 @@
+{
+  "intent": "Remove .arx/ prefix from internal paths — root IS the arx directory",
+  "scope": "small",
+  "targets": [
+    {
+      "edits": [
+        {
+          "content": "const JOURNAL_DIR: &str = \"journal\";",
+          "operation": "replace",
+          "selector": {
+            "contains_text": "const JOURNAL_DIR: &str = \".arx/journal\";"
+          }
+        }
+      ],
+      "file": "crates/arx/src/journal.rs"
+    },
+    {
+      "edits": [
+        {
+          "content": "const ARCHIVE_FILE: &str = \"archive.jsonl\";",
+          "operation": "replace",
+          "selector": {
+            "contains_text": "const ARCHIVE_FILE: &str = \".arx/archive.jsonl\";"
+          }
+        }
+      ],
+      "file": "crates/arx/src/archive.rs"
+    },
+    {
+      "edits": [
+        {
+          "content": "const CHECKPOINT_PATH: &str = \"checkpoint.json\";",
+          "operation": "replace",
+          "selector": {
+            "contains_text": "const CHECKPOINT_PATH: &str = \".arx/checkpoint.json\";"
+          }
+        }
+      ],
+      "file": "crates/arx/src/checkpoint.rs"
+    }
+  ]
+}

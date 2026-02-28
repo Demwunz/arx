@@ -1,0 +1,25 @@
+{
+  "intent": "Fix test paths after .arx/ prefix removal",
+  "scope": "small",
+  "targets": [
+    {
+      "edits": [
+        {
+          "content": "        // Verify the .md file has body content after frontmatter\n        let file = root.join(format!(\"journal/{id}.md\"));\n",
+          "operation": "replace",
+          "selector": {
+            "contains_text": "        // Verify the .md file has body content after frontmatter\n        let file = root.join(format!(\".arx/journal/{id}.md\"));\n"
+          }
+        },
+        {
+          "content": "        let id = record(root, \"decision\", None, \"Simple decision\", None, None, None).unwrap();\n\n        let file = root.join(format!(\"journal/{id}.md\"));\n",
+          "operation": "replace",
+          "selector": {
+            "contains_text": "        let id = record(root, \"decision\", None, \"Simple decision\", None, None, None).unwrap();\n\n        let file = root.join(format!(\".arx/journal/{id}.md\"));\n"
+          }
+        }
+      ],
+      "file": "crates/arx/src/lib.rs"
+    }
+  ]
+}

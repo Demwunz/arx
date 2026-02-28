@@ -1,0 +1,27 @@
+intent: Remove .arx/ prefix from internal paths — root IS the arx directory
+scope: small
+tier: quick
+mutations:
+- file: crates/arx/src/journal.rs
+  edits:
+  - find: 'const JOURNAL_DIR: &str = ".arx/journal";'
+    find_file: ''
+    operation: replace
+    content: 'const JOURNAL_DIR: &str = "journal";'
+    content_file: ''
+- file: crates/arx/src/archive.rs
+  edits:
+  - find: 'const ARCHIVE_FILE: &str = ".arx/archive.jsonl";'
+    find_file: ''
+    operation: replace
+    content: 'const ARCHIVE_FILE: &str = "archive.jsonl";'
+    content_file: ''
+- file: crates/arx/src/checkpoint.rs
+  edits:
+  - find: 'const CHECKPOINT_PATH: &str = ".arx/checkpoint.json";'
+    find_file: ''
+    operation: replace
+    content: 'const CHECKPOINT_PATH: &str = "checkpoint.json";'
+    content_file: ''
+new_files: []
+delete_files: []

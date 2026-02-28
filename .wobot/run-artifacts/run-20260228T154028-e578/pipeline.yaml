@@ -1,0 +1,37 @@
+id: run-20260228T154028-e578
+steps:
+- classification: mechanical
+  id: validate-intent
+  inputs:
+    file: /Users/fazal/dev/arx/.wobot/run-artifacts/run-20260228T154028-e578/intent.yaml
+  type: validate_intent
+- classification: mechanical
+  id: dry-run-validate
+  inputs:
+    dry_run: true
+    spec_file: /Users/fazal/dev/arx/.wobot/run-artifacts/run-20260228T154028-e578/pipeline.etch-spec.json
+  on_failure: halt
+  type: etch
+- classification: mechanical
+  id: mutate
+  inputs:
+    spec_file: /Users/fazal/dev/arx/.wobot/run-artifacts/run-20260228T154028-e578/pipeline.etch-spec.json
+  type: etch
+- classification: mechanical
+  id: compile-check
+  inputs:
+    command: cargo check --message-format short 2>&1
+  on_failure: halt
+  type: shell
+- classification: mechanical
+  id: compliance-review
+  inputs:
+    checks:
+    - governance_compliance
+    - scope_check
+    - classification_audit
+    - drift_check
+    intent_file: /Users/fazal/dev/arx/.wobot/run-artifacts/run-20260228T154028-e578/intent.yaml
+    run_id: run-20260228T154028-e578
+  on_failure: continue
+  type: review
