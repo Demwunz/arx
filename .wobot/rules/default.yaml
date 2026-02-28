@@ -1,0 +1,18 @@
+# Governance rules
+# Define conditions and actions for pipeline governance
+
+rules:
+  - id: require-tests-for-large-scope
+    match:
+      scope: large
+    action: add_gate
+    params:
+      prompt: "Large scope change requires explicit approval"
+      position: before_apply
+
+  - id: block-production-without-review
+    match:
+      environment: production
+    action: require_decision
+    params:
+      decision_type: deployment_approval

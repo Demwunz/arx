@@ -1,0 +1,18 @@
+{
+  "intent": "Add tests for record_with_body and Ai actor type",
+  "scope": "small",
+  "targets": [
+    {
+      "edits": [
+        {
+          "content": "        let all = journal::read_all(root).unwrap();\n        assert_eq!(all.len(), 2);\n    }\n\n    #[test]\n    fn test_record_with_body_writes_content() {\n        let tmp = TempDir::new().unwrap();\n        let root = tmp.path();\n\n        let id = record_with_body(\n            root,\n            \"decision\",\n            Some(\"ai\"),\n            \"Use hybrid arx capture\",\n            Some(\"architecture\"),\n            None,\n            None,\n            Some(\"Server captures machine decisions. Extension captures human decisions.\"),\n        )\n        .unwrap();\n\n        // Verify the .md file has body content after frontmatter\n        let file = root.join(format!(\".arx/journal/{id}.md\"));\n        let content = std::fs::read_to_string(&file).unwrap();\n        assert!(content.contains(\"---\\n\\nServer captures machine decisions\"));\n\n        // Verify show returns body\n        let entry = show(root, &id).unwrap();\n        assert_eq!(entry.actor, \"ai\");\n        assert!(entry.body.is_some());\n        assert!(entry.body.unwrap().contains(\"Server captures\"));\n    }\n\n    #[test]\n    fn test_record_without_body_backward_compatible() {\n        let tmp = TempDir::new().unwrap();\n        let root = tmp.path();\n\n        let id = record(root, \"decision\", None, \"Simple decision\", None, None, None).unwrap();\n\n        let file = root.join(format!(\".arx/journal/{id}.md\"));\n        let content = std::fs::read_to_string(&file).unwrap();\n        assert!(content.trim().ends_with(\"---\"));\n\n        let entry = show(root, &id).unwrap();\n        assert!(entry.body.is_none());\n    }\n}\n",
+          "operation": "replace",
+          "selector": {
+            "contains_text": "        let all = journal::read_all(root).unwrap();\n        assert_eq!(all.len(), 2);\n    }\n}\n"
+          }
+        }
+      ],
+      "file": "crates/arx/src/lib.rs"
+    }
+  ]
+}

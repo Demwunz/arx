@@ -1,0 +1,16 @@
+# Example pipeline file
+# Pipelines define sequences of steps to execute
+
+id: example-pipeline
+steps:
+  - id: validate
+    type: validate_intent
+    inputs:
+      file: .wobot/intents/example.yaml
+
+  - id: review-gate
+    type: gate
+    inputs:
+      prompt: "Review the generated changes before applying"
+    depends_on:
+      - validate

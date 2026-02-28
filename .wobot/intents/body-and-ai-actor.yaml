@@ -1,0 +1,15 @@
+id: body-and-ai-actor
+title: "Add body parameter to record() and Ai actor type"
+description: |
+  Fix the format bug where all arx entries are frontmatter-only.
+  The journal writer already handles body content after the --- closer,
+  but record() never passes it through. Add record_with_body() and
+  an Ai actor variant for AI-captured reasoning.
+scope:
+  - crates/arx/src/lib.rs
+  - crates/arx/src/entry.rs
+changes:
+  - record_with_body() function with body: Option<&str>
+  - record() delegates to record_with_body(None)
+  - ActorType::Ai variant with "ai" serialization
+status: active

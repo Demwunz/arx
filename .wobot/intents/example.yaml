@@ -1,0 +1,17 @@
+# Example intent file
+# Intents describe what you want to accomplish
+
+id: example-feature
+description: "Add a new feature to the application"
+scope: small
+
+goals:
+  - "Implement the core functionality"
+  - "Add appropriate tests"
+  - "Update documentation if needed"
+
+constraints:
+  - "Follow existing code patterns"
+  - "Maintain backward compatibility"
+
+status: draft

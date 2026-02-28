@@ -25,6 +25,20 @@ pub fn record(
     supersedes: Option<&str>,
     reverses: Option<&str>,
 ) -> Result<String, ArxError> {
+    record_with_body(root, entry_type, actor, title, scope, supersedes, reverses, None)
+}
+
+/// Record creates a new journal entry with optional body content and returns its ID.
+pub fn record_with_body(
+    root: &Path,
+    entry_type: &str,
+    actor: Option<&str>,
+    title: &str,
+    scope: Option<&str>,
+    supersedes: Option<&str>,
+    reverses: Option<&str>,
+    body: Option<&str>,
+) -> Result<String, ArxError> {
     let et = entry_type
         .parse::<EntryType>()
         .map_err(|_| ArxError::InvalidType)?;
@@ -41,7 +55,7 @@ pub fn record(
         date: Utc::now(),
         title: title.to_string(),
         scope: scope.map(|s| s.to_string()),
-        content: String::new(),
+        content: body.unwrap_or("").to_string(),
         supersedes: supersedes.map(|s| s.to_string()),
         reversed_by: None,
     };
@@ -415,5 +429,49 @@ mod tests {
 
         let all = journal::read_all(root).unwrap();
         assert_eq!(all.len(), 2);
+    }
+
+    #[test]
+    fn test_record_with_body_writes_content() {
+        let tmp = TempDir::new().unwrap();
+        let root = tmp.path();
+
+        let id = record_with_body(
+            root,
+            "decision",
+            Some("ai"),
+            "Use hybrid arx capture",
+            Some("architecture"),
+            None,
+            None,
+            Some("Server captures machine decisions. Extension captures human decisions."),
+        )
+        .unwrap();
+
+        // Verify the .md file has body content after frontmatter
+        let file = root.join(format!(".arx/journal/{id}.md"));
+        let content = std::fs::read_to_string(&file).unwrap();
+        assert!(content.contains("---\n\nServer captures machine decisions"));
+
+        // Verify show returns body
+        let entry = show(root, &id).unwrap();
+        assert_eq!(entry.actor, "ai");
+        assert!(entry.body.is_some());
+        assert!(entry.body.unwrap().contains("Server captures"));
+    }
+
+    #[test]
+    fn test_record_without_body_backward_compatible() {
+        let tmp = TempDir::new().unwrap();
+        let root = tmp.path();
+
+        let id = record(root, "decision", None, "Simple decision", None, None, None).unwrap();
+
+        let file = root.join(format!(".arx/journal/{id}.md"));
+        let content = std::fs::read_to_string(&file).unwrap();
+        assert!(content.trim().ends_with("---"));
+
+        let entry = show(root, &id).unwrap();
+        assert!(entry.body.is_none());
     }
 }

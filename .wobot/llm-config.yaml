@@ -1,0 +1,43 @@
+# LLM configuration
+# Maps roles to providers and models for cost-optimized execution
+
+defaults:
+  provider: anthropic
+
+roles:
+  # Planning: deep reasoning, rare calls — use strongest model
+  planner:
+    provider: anthropic
+    model: claude-opus-4-6
+
+  # Code generation: good output, moderate cost
+  executor:
+    provider: anthropic
+    model: claude-sonnet-4-6
+
+  # Reviews: needs judgment, bounded scope
+  reviewer:
+    provider: anthropic
+    model: claude-sonnet-4-6
+
+  # Default/simple tasks: cheapest, fastest
+  default:
+    provider: anthropic
+    model: claude-haiku-4-5-20251001
+
+# CLI fallback example (for providers without API adapters):
+#  gemini-task:
+#    provider: cli
+#    command: gemini
+#    args: ["--prompt"]
+
+# Credentials resolution order:
+#   1. api_key_env field (custom env var)
+#   2. WOBOT_{PROVIDER}_API_KEY
+#   3. System keychain (service: wobot, account: {provider})
+#   4. {PROVIDER}_API_KEY
+#
+# Store keys in keychain:
+#   wobot keys set anthropic
+#   wobot keys set openai
+#   wobot keys set google

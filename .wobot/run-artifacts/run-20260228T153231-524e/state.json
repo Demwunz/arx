@@ -1,0 +1,10 @@
+{
+  "description": "Add tests for record_with_body and Ai actor type",
+  "intent_file": "/Users/fazal/dev/arx/.wobot/run-artifacts/run-20260228T153231-524e/intent.yaml",
+  "last_run": "2026-02-28T15:32:33.213980+00:00",
+  "pipeline_file": "/Users/fazal/dev/arx/.wobot/run-artifacts/run-20260228T153231-524e/pipeline.yaml",
+  "profile": "solo",
+  "run_id": "run-20260228T153231-524e",
+  "status": "completed",
+  "version": "1.0"
+}

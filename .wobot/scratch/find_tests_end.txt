@@ -1,0 +1,4 @@
+        let all = journal::read_all(root).unwrap();
+        assert_eq!(all.len(), 2);
+    }
+}

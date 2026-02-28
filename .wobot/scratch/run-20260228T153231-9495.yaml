@@ -1,0 +1,65 @@
+intent: Add tests for record_with_body and Ai actor type
+scope: small
+tier: quick
+mutations:
+- file: crates/arx/src/lib.rs
+  edits:
+  - find: |2
+              let all = journal::read_all(root).unwrap();
+              assert_eq!(all.len(), 2);
+          }
+      }
+    find_file: ''
+    operation: replace
+    content: |2
+              let all = journal::read_all(root).unwrap();
+              assert_eq!(all.len(), 2);
+          }
+
+          #[test]
+          fn test_record_with_body_writes_content() {
+              let tmp = TempDir::new().unwrap();
+              let root = tmp.path();
+
+              let id = record_with_body(
+                  root,
+                  "decision",
+                  Some("ai"),
+                  "Use hybrid arx capture",
+                  Some("architecture"),
+                  None,
+                  None,
+                  Some("Server captures machine decisions. Extension captures human decisions."),
+              )
+              .unwrap();
+
+              // Verify the .md file has body content after frontmatter
+              let file = root.join(format!(".arx/journal/{id}.md"));
+              let content = std::fs::read_to_string(&file).unwrap();
+              assert!(content.contains("---\n\nServer captures machine decisions"));
+
+              // Verify show returns body
+              let entry = show(root, &id).unwrap();
+              assert_eq!(entry.actor, "ai");
+              assert!(entry.body.is_some());
+              assert!(entry.body.unwrap().contains("Server captures"));
+          }
+
+          #[test]
+          fn test_record_without_body_backward_compatible() {
+              let tmp = TempDir::new().unwrap();
+              let root = tmp.path();
+
+              let id = record(root, "decision", None, "Simple decision", None, None, None).unwrap();
+
+              let file = root.join(format!(".arx/journal/{id}.md"));
+              let content = std::fs::read_to_string(&file).unwrap();
+              assert!(content.trim().ends_with("---"));
+
+              let entry = show(root, &id).unwrap();
+              assert!(entry.body.is_none());
+          }
+      }
+    content_file: ''
+new_files: []
+delete_files: []

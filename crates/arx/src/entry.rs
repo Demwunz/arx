@@ -73,6 +73,8 @@ pub enum ActorType {
     Executor,
     Reviewer,
     System,
+    /// AI agent capturing reasoning at inflection points.
+    Ai,
 }
 
 impl fmt::Display for ActorType {
@@ -83,6 +85,7 @@ impl fmt::Display for ActorType {
             ActorType::Executor => "executor",
             ActorType::Reviewer => "reviewer",
             ActorType::System => "system",
+            ActorType::Ai => "ai",
         };
         write!(f, "{}", s)
     }
@@ -98,6 +101,7 @@ impl FromStr for ActorType {
             "executor" => Ok(ActorType::Executor),
             "reviewer" => Ok(ActorType::Reviewer),
             "system" => Ok(ActorType::System),
+            "ai" => Ok(ActorType::Ai),
             _ => Err(format!("invalid actor type: {s}")),
         }
     }

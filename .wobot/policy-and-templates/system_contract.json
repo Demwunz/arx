@@ -1,0 +1,201 @@
+{
+  "describe_version": "2",
+  "version": "3.0.0-alpha.43",
+  "commands": [
+    {
+      "name": "run",
+      "description": "Run a task (plain English or pipeline file)"
+    },
+    {
+      "name": "continue",
+      "description": "Resume a blocked pipeline"
+    },
+    {
+      "name": "status",
+      "description": "Show current project and run status"
+    },
+    {
+      "name": "context",
+      "description": "Smart repo context via topo"
+    },
+    {
+      "name": "describe",
+      "description": "Show system contract"
+    },
+    {
+      "name": "init",
+      "description": "Initialize a new .wobot directory"
+    },
+    {
+      "name": "validate",
+      "description": "Validate an intent file"
+    },
+    {
+      "name": "doctor",
+      "description": "Check governance hygiene"
+    },
+    {
+      "name": "mutate",
+      "description": "Apply mutations from JSON spec with governance"
+    },
+    {
+      "name": "finish",
+      "description": "Clean up worktree and branch after merge"
+    },
+    {
+      "name": "start",
+      "description": "Create branch and worktree for new work"
+    },
+    {
+      "name": "new",
+      "description": "Create scaffolds (intent, pipeline)"
+    },
+    {
+      "name": "serve",
+      "description": "Start passive event streaming server"
+    },
+    {
+      "name": "version",
+      "description": "Show version information"
+    }
+  ],
+  "toolchain": [
+    {
+      "name": "validate-intent",
+      "wobot_command": "wobot validate",
+      "direct_call_policy": "Use wobot validate instead"
+    },
+    {
+      "name": "etch",
+      "wobot_command": "(invoked by pipeline steps)",
+      "direct_call_policy": "Never call directly; used internally by etch steps via wobot mutate"
+    },
+    {
+      "name": "topo",
+      "wobot_command": "wobot context",
+      "direct_call_policy": "Use wobot context instead of calling topo directly"
+    }
+  ],
+  "governance": {
+    "execution_shape": [
+      "intent -> PHC -> pipeline YAML -> pipeline-runner run",
+      "All code changes flow through governed pipelines",
+      "LLM agents must read system contract (wobot describe --json) before acting",
+      "Use wobot mutate --spec for code changes; etch is the canonical mutation primitive"
+    ],
+    "lifecycle": [
+      "1. Human describes change in plain English",
+      "2. Create intent YAML in .wobot/intents/",
+      "3. Validate intent: wobot validate --file .wobot/intents/<name>.yaml",
+      "4. Create pipeline YAML or use wobot mutate --spec",
+      "5. Execute: wobot run --file <pipeline> --intent <intent>",
+      "6. If gate blocks: wobot continue --decision approve",
+      "7. On completion: verify tests pass, commit governed artifacts"
+    ],
+    "forbidden_actions": [
+      "Editing source files directly without governance artifacts",
+      "Calling toolchain binaries directly (use wobot wrappers)",
+      "Expanding scope beyond the declared intent",
+      "Skipping intent validation"
+    ],
+    "directory_layout": [
+      {
+        "path": ".wobot/intents/",
+        "description": "Human-authored intent YAML declarations"
+      },
+      {
+        "path": ".wobot/pipelines/",
+        "description": "Pipeline YAML files defining step sequences"
+      },
+      {
+        "path": ".wobot/runs/",
+        "description": "Run execution state and provenance (DO NOT EDIT)"
+      },
+      {
+        "path": ".wobot/cache/",
+        "description": "Describe snapshot and cached data"
+      },
+      {
+        "path": ".wobot/scratch/",
+        "description": "Temporary working space (not governed)"
+      },
+      {
+        "path": ".wobot/policy-and-templates/",
+        "description": "Promoted reusable templates (git-tracked)"
+      },
+      {
+        "path": ".wobot/run-artifacts/<run-id>/",
+        "description": "Per-run generated artifacts"
+      }
+    ],
+    "intent_schema": {
+      "required": [
+        {
+          "name": "id",
+          "type": "string",
+          "description": "Unique identifier"
+        },
+        {
+          "name": "description",
+          "type": "string",
+          "description": "What this intent accomplishes"
+        },
+        {
+          "name": "scope",
+          "type": "enum",
+          "description": "Size: small, medium, large"
+        },
+        {
+          "name": "goals",
+          "type": "array[string]",
+          "description": "Discrete outcomes"
+        }
+      ],
+      "optional": [
+        {
+          "name": "constraints",
+          "type": "array[string]",
+          "description": "Boundaries on execution"
+        },
+        {
+          "name": "status",
+          "type": "enum",
+          "description": "draft or accepted"
+        }
+      ]
+    },
+    "workflows": [
+      {
+        "name": "Governed pipeline execution",
+        "steps": [
+          "wobot describe --json",
+          "wobot validate --file .wobot/intents/<name>.yaml",
+          "wobot run --file .wobot/pipelines/<name>.yaml --intent .wobot/intents/<name>.yaml",
+          "wobot continue --decision approve"
+        ]
+      }
+    ],
+    "troubleshooting": [
+      {
+        "error": "no describe snapshot found",
+        "solution": "Run: wobot describe --json"
+      },
+      {
+        "error": "pre-existing drift detected",
+        "solution": "Clean tree or use --allow-preexisting-drift"
+      },
+      {
+        "error": "pipeline blocked at gate",
+        "solution": "Run: wobot continue --decision approve"
+      }
+    ],
+    "llm_contract": [
+      "1. Run `wobot describe --json` as your first action.",
+      "2. Never edit source files directly — use `wobot mutate --spec`.",
+      "3. Never call toolchain binaries directly — use wobot wrappers.",
+      "4. Use `wobot context` for file discovery instead of Grep/Glob.",
+      "5. Profiles: solo (auto mechanical+semantic), team (auto mechanical only), regulated (all require approval)."
+    ]
+  },
+  "manifest_hash": "aeaf8463698802f4cce0b65fe460fbb320e43f888b01473fdd0ca59c2bebdcad"
+}

@@ -1,0 +1,7 @@
+description: Add tests for record_with_body and Ai actor type
+goals:
+- Add tests for record_with_body and Ai actor type
+id: run-20260228T153231-524e
+scope: small
+status: accepted
+tier: quick
